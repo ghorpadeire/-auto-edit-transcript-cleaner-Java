@@ -7,13 +7,12 @@ import java.util.Map;
 @RestController
 public class HomeController {
 
-    @GetMapping("/")
-    public Map<String, String> home() {
+    // Removed the "/" mapping so that index.html can be served automatically
+    @GetMapping("/api/status")
+    public Map<String, String> status() {
         return Map.of(
             "status", "online",
-            "service", "MNC Transcript Cleaner API",
-            "version", "1.0.4",
-            "message", "The API is running. Use the /api/v1/analyze endpoint for processing."
+            "version", "1.0.4"
         );
     }
 }
