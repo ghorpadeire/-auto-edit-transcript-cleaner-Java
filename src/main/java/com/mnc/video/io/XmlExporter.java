@@ -87,6 +87,51 @@ public class XmlExporter {
         }
     }
 
+    public String generateXmlString(List<VideoClip> clips, String videoFileName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        sb.append("<!DOCTYPE xmeml>\n");
+        sb.append("<xmeml version=\"5\">\n");
+        sb.append("  <sequence id=\"sequence-1\">\n");
+        sb.append("    <name>Cleaned Sequence</name>\n");
+        sb.append("    <rate><timebase>").append(frameRate).append("</timebase><ntsc>FALSE</ntsc></rate>\n");
+        sb.append("    <media>\n");
+        sb.append("      <video>\n");
+        sb.append("        <format>\n");
+        sb.append("          <samplecharacteristics>\n");
+        sb.append("            <width>").append(width).append("</width>\n");
+        sb.append("            <height>").append(height).append("</height>\n");
+        sb.append("          </samplecharacteristics>\n");
+        sb.append("        </format>\n");
+        sb.append("        <track>\n");
+
+        long currentTimelineFrame = 0;
+        for (VideoClip clip : clips) {
+            long startFrame = Math.round(clip.getSourceStart() * frameRate);
+            long endFrame = Math.round(clip.getSourceEnd() * frameRate);
+            long durationFrames = endFrame - startFrame;
+            if (durationFrames <= 0) continue;
+
+            sb.append("          <clipitem id=\"v-").append(currentTimelineFrame).append("\">\n");
+            sb.append("            <name>").append(videoFileName).append("</name>\n");
+            sb.append("            <rate><timebase>").append(frameRate).append("</timebase></rate>\n");
+            sb.append("            <start>").append(currentTimelineFrame).append("</start>\n");
+            sb.append("            <end>").append(currentTimelineFrame + durationFrames).append("</end>\n");
+            sb.append("            <in>").append(startFrame).append("</in>\n");
+            sb.append("            <out>").append(endFrame).append("</out>\n");
+            sb.append("            <file id=\"file-1\"><name>").append(videoFileName).append("</name></file>\n");
+            sb.append("          </clipitem>\n");
+            currentTimelineFrame += durationFrames;
+        }
+
+        sb.append("        </track>\n");
+        sb.append("      </video>\n");
+        sb.append("    </media>\n");
+        sb.append("  </sequence>\n");
+        sb.append("</xmeml>");
+        return sb.toString();
+    }
+
     private String encodeUrl(String path) {
         return path.replace(" ", "%20")
                    .replace("(", "%28")

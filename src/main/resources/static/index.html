@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNC Auto-Edit Tool</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        h1 { color: #333; font-size: 1.5rem; }
+        p { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+        input[type="file"] { margin-bottom: 1.5rem; display: block; width: 100%; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; }
+        button:hover { background: #0056b3; }
+        #report { margin-top: 1.5rem; text-align: left; background: #f8f9fa; padding: 1rem; border-radius: 6px; font-family: monospace; white-space: pre-wrap; font-size: 0.8rem; display: none; }
+        #downloadBtn { background: #28a745; margin-top: 1rem; display: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Auto-Edit Tool</h1>
+        <p>Upload your transcript JSON to generate a Premiere Pro XML sequence.</p>
+        
+        <input type="file" id="jsonFile" accept=".json">
+        <button id="processBtn">Clean Transcript & Generate XML</button>
+        
+        <div id="report"></div>
+        <button id="downloadBtn">Download XML for Premiere</button>
+    </div>
+
+    <script>
+        let generatedXml = "";
+        let videoFileName = "";
+
+        document.getElementById('processBtn').onclick = async () => {
+            const file = document.getElementById('jsonFile').files[0];
+            if (!file) return alert("Please select a JSON file.");
+
+            const text = await file.text();
+            const response = await fetch('/api/v1/analyze/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: text
+            });
+
+            const result = await response.json();
+            if (result.status === "success") {
+                document.getElementById('report').innerText = result.report;
+                document.getElementById('report').style.display = 'block';
+                document.getElementById('downloadBtn').style.display = 'block';
+                generatedXml = result.xml;
+                videoFileName = file.name.replace(".json", "");
+            }
+        };
+
+        document.getElementById('downloadBtn').onclick = () => {
+            const blob = new Blob([generatedXml], { type: 'text/xml' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = videoFileName + "_cleaned.xml";
+            a.click();
+        };
+    </script>
+</body>
+</html>
