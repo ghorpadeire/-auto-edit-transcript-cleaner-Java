@@ -21,8 +21,12 @@ public class Transcript {
         List<Word> allWords = new ArrayList<>();
         if (segments != null) {
             for (Segment s : segments) {
-                if (s.getWords() != null) {
-                    allWords.addAll(s.getWords());
+                if (s != null && s.getWords() != null) {
+                    for (Word word : s.getWords()) {
+                        if (word != null) {
+                            allWords.add(word);
+                        }
+                    }
                 }
             }
         }
