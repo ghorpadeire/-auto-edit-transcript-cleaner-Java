@@ -1,6 +1,7 @@
 package com.mnc.video.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -28,8 +29,8 @@ class TranscriptTest {
 
         assertThat(words).hasSize(1);
         assertThat(words.get(0).getText()).isEqualTo("Hello");
-        assertThat(words.get(0).getDuration()).isEqualTo(0.4);
-        assertThat(words.get(0).getEnd()).isEqualTo(1.4);
+        assertThat(words.get(0).getDuration()).isCloseTo(0.4, within(0.001));
+        assertThat(words.get(0).getEnd()).isCloseTo(1.4, within(0.001));
     }
 
     @Test
