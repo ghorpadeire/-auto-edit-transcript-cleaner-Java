@@ -12,7 +12,12 @@ public class FillerWordFilter implements TranscriptFilter {
 
     @Override
     public boolean evaluate(Word currentWord, int index, Word previousWord) {
-        String text = currentWord.getText().toLowerCase().trim();
+        String rawText = currentWord.getText();
+        if (rawText == null) {
+            return false;
+        }
+
+        String text = rawText.toLowerCase().trim();
         
         // 1. Remove if it's an empty sound (disfluency)
         if (text.isEmpty()) {

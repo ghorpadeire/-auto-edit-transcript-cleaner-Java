@@ -12,8 +12,13 @@ public class ActionWordFilter implements TranscriptFilter {
 
     @Override
     public boolean evaluate(Word currentWord, int index, Word previousWord) {
+        String text = currentWord.getText();
+        if (text == null) {
+            return false;
+        }
+
         // If it's the first word and in our blacklist, remove it
-        if (index == 0 && blacklist.contains(currentWord.getText().toLowerCase().replaceAll("[^a-zA-Z]", ""))) {
+        if (index == 0 && blacklist.contains(text.toLowerCase().replaceAll("[^a-zA-Z]", ""))) {
             return false;
         }
         return true;
